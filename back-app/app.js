@@ -11,10 +11,12 @@ app.use(express.json());
 //IMPORT DAS ROTAS /ROUTES
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var pacotesRouter = require('./routes/pacotes');
 
 // DEFINE OS ENDPOINTS PARA AS ROTAS
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/pacotes', pacotesRouter);
 
 
 // view engine setup
