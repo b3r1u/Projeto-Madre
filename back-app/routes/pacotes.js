@@ -19,7 +19,7 @@ db.run(`CREATE TABLE IF NOT EXISTS pacotes (
 });
 
 // Criar pacote
-router.post("/pacotes", (req, res) => {
+router.post("/", (req, res) => {
   const { passagem, validade, saidas, refeicao } = req.body;
   console.log(req.body)
 
