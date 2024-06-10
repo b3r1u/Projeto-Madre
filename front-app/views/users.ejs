@@ -1,0 +1,77 @@
+<h1>
+    <%=title%>
+</h1>
+<form id="formulario" method="post" action="processar_formulario.php">
+    <table>
+        <tr>
+            <th>
+                <label for="nome">Nome completo:</label>
+            </th>
+            <td>
+                <input type="text" id="nome" name="nome" placeholder="Nome completo" required pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]+" title="Apenas caracteres são permitidos">
+            </td>
+            <th>
+                <label for="email">Email:</label>
+            </th>
+            <td>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="cpf">CPF:</label></th>
+            <td><input type="text" id="cpf" name="cpf" placeholder="CPF" required pattern="[0-9]{11}" title="Digite apenas 11 dígitos numéricos"></td>
+            <th><label for="data_nascimento">Data de nascimento:</label></th>
+            <td><input type="date" id="data_nascimento" name="data_nascimento" placeholder="Data de nascimento" required></td>
+        </tr>
+        <tr>
+            <th><label for="telefone">Telefone:</label></th>
+            <td><input type="tel" id="telefone" name="telefone" placeholder="Telefone" required pattern="[0-9]+" title="Digite apenas números"></td>
+            <th><label for="senha">Senha:</label></th>
+            <td><input type="password" id="senha" name="senha" placeholder="Ditige sua senha" title="DIgite sua senha:"></td>
+        </tr>
+    </table>
+    <br>
+    <button class="btn">SALVAR E CONTINUAR</button>
+    <br>
+    <button type="reset">CANCELAR</button>
+    <br>
+</form>
+
+<% if(error){%>
+    <span><%=error%></span>
+<%}%>
+
+<table>
+    <thead>
+        <tr>
+            <% for (let col of cols) { %>
+                <th><%= col %></th>
+            <% } %>
+            
+        </tr>
+    </thead>
+    <tbody>
+        <% for (let user of users) { %>
+            <tr>
+                <% for (let prop in user) { %>
+                    <td><%= user[prop] %></td>
+                <% } %> 
+                <td>
+                    <button>EDITAR</button>
+                    <button>DELETAR</button>
+                </td>
+            </tr>
+        <% } %>    
+    </tbody>
+</table>
+
+<script>
+    const form = document.getElementById('formulario')
+
+    form.addEventListener("submit", (e)=>{
+        e.preventDefault()
+
+        const formData = new FormData(form)
+        
+    })
+</script>
