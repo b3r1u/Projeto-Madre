@@ -59,7 +59,7 @@
                     <td><%= user[prop] %></td>
                 <% } %> 
                 <td>
-                    <button>EDITAR</button>
+                    <button onclick = "editUser('<%=user.id%>')">EDITAR</button>
                     <button>DELETAR</button>
                 </td>
             </tr>
@@ -93,11 +93,38 @@
     function editUser(id){
         console.log(id)
         fetch("/users/"+id, {
-            method: "POST",
+            method: "GET",
         })
-        .then((res) =>  {return res.json()})
-        .then((user) =>  {console.log( 'foi salvo', user)})
+        .then(async (res)=>{
+            if(!res.ok){
+            const err = await res.json()
+            throw err
+            }
+            return res.json()
+        })
+        .then((user) =>  {
+            console.log( 'retornou o usuário', user)
+           
+        })
         .catch((error) =>  {document.getElementById('error').innerText = error}) 
  
     }
+
+    function deletarUser(id){
+        console.log(id)
+        fetch("/users/"+id, {
+            method: "DELETE",
+        })
+        .then(async (res)=>{
+            if(!res.ok){
+            const err = await res.json()
+            throw err
+            }
+            return res.json()
+        })
+        .then((user) =>  {console.log( 'retornou o usuário', user)})
+        .catch((error) =>  {document.getElementById('error').innerText = error}) 
+ 
+    }
+
 </script>
