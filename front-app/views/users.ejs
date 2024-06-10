@@ -37,6 +37,8 @@
     <br>
 </form>
 
+<span id="error"></span>
+
 <% if(error){%>
     <span><%=error%></span>
 <%}%>
@@ -72,6 +74,30 @@
         e.preventDefault()
 
         const formData = new FormData(form)
-        
+        const user = {}
+        formData.forEach((v, k)=>{
+            user[k] = v
+        })
+        console.log(user)
+
+        fetch("/users", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(user)
+        })
+        .then((res) =>  {return res.json()})
+        .then((user) =>  {console.log( 'foi salvo', user)})
+        .catch((error) =>  {document.getElementById('error').innerText = error}) 
     })
+
+    function editUser(id){
+        console.log(id)
+        fetch("/users/"+id, {
+            method: "POST",
+        })
+        .then((res) =>  {return res.json()})
+        .then((user) =>  {console.log( 'foi salvo', user)})
+        .catch((error) =>  {document.getElementById('error').innerText = error}) 
+ 
+    }
 </script>
