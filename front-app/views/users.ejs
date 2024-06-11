@@ -1,40 +1,24 @@
 <h1>
     <%=title%>
 </h1>
-<form id="formulario" method="post" action="processar_formulario.php">
-    <table>
-        <tr>
-            <th>
-                <label for="nome">Nome completo:</label>
-            </th>
-            <td>
-                <input type="text" id="nome" name="nome" placeholder="Nome completo" required pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]+" title="Apenas caracteres são permitidos">
-            </td>
-            <th>
-                <label for="email">Email:</label>
-            </th>
-            <td>
-                <input type="email" id="email" name="email" placeholder="Email" required>
-            </td>
-        </tr>
-        <tr>
-            <th><label for="cpf">CPF:</label></th>
-            <td><input type="text" id="cpf" name="cpf" placeholder="CPF" required pattern="[0-9]{11}" title="Digite apenas 11 dígitos numéricos"></td>
-            <th><label for="data_nascimento">Data de nascimento:</label></th>
-            <td><input type="date" id="data_nascimento" name="data_nascimento" placeholder="Data de nascimento" required></td>
-        </tr>
-        <tr>
-            <th><label for="telefone">Telefone:</label></th>
-            <td><input type="tel" id="telefone" name="telefone" placeholder="Telefone" required pattern="[0-9]+" title="Digite apenas números"></td>
-            <th><label for="senha">Senha:</label></th>
-            <td><input type="password" id="senha" name="senha" placeholder="Ditige sua senha" title="DIgite sua senha:"></td>
-        </tr>
-    </table>
-    <br>
-    <button class="btn">SALVAR E CONTINUAR</button>
-    <br>
-    <button type="reset">CANCELAR</button>
-    <br>
+<form id="formulario">
+        <input type="hidden" name="id" id="id">
+        <label for="username">Nome completo:</label>
+        <input name="username" id="username" type="text"><br>
+        <label for="email">Email:</label>
+        <input name="email" id="email" type="text"><br>
+        <label for="cpf">CPF:</label>
+        <input name="cpf" id="cpf" type="text"><br>
+        <label for="dataNascimento">Data Nascimento:</label>
+        <input name="dataNascimento" id="dataNascimento" type="text"><br>
+        <label for="telefone">Telefone:</label>
+        <input name="telefone" id="telefone" type="text"><br>
+        <label for="endereco">Endereço:</label>
+        <input name="endereco" id="endereco" type="text"><br>
+        <label for="password">Senha:</label>
+        <input name="password" id="password" type="text"><br>
+        <button type="submit">ENVIAR</button>
+        <button type="reset">CANCELAR</button>
 </form>
 
 <span id="error"></span>
@@ -60,7 +44,7 @@
                 <% } %> 
                 <td>
                     <button onclick = "editUser('<%=user.id%>')">EDITAR</button>
-                    <button>DELETAR</button>
+                    <button onclick = "deletarUser('<%=user.id%>')">DELETAR</button>
                 </td>
             </tr>
         <% } %>    
@@ -68,6 +52,8 @@
 </table>
 
 <script>
+
+    //paramos aqui 
     const form = document.getElementById('formulario')
 
     form.addEventListener("submit", (e)=>{
@@ -78,10 +64,15 @@
         formData.forEach((v, k)=>{
             user[k] = v
         })
+
+        let id = user.id
+        let METHOD = id ? 'PUT' : 'POST';
+        let URL = id ? '/users/${id}' : '/users';
+
         console.log(user)
 
-        fetch("/users", {
-            method: "POST",
+        fetch(URL, {
+            method: METHOD,
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(user)
         })
@@ -91,7 +82,6 @@
     })
 
     function editUser(id){
-        console.log(id)
         fetch("/users/"+id, {
             method: "GET",
         })
@@ -104,16 +94,19 @@
         })
         .then((user) =>  {
             console.log( 'retornou o usuário', user)
-           
+           for(let prop in user){
+            const input = document.querySelector(`input[name="${prop}"]`)
+            input.value = user[prop] 
+           }
         })
         .catch((error) =>  {document.getElementById('error').innerText = error}) 
  
     }
 
+    // perguntar pq n ta dando refresh 
     function deletarUser(id){
-        console.log(id)
         fetch("/users/"+id, {
-            method: "DELETE",
+            method: "DELETE"
         })
         .then(async (res)=>{
             if(!res.ok){
@@ -122,7 +115,9 @@
             }
             return res.json()
         })
-        .then((user) =>  {console.log( 'retornou o usuário', user)})
+        .then((user) =>  {
+           window.location.reload();
+        })
         .catch((error) =>  {document.getElementById('error').innerText = error}) 
  
     }

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const url = "https://solid-doodle-5w4gpp5w44rh4j9g-3000.app.github.dev/users/"
+const url = "https://fuzzy-computing-machine-pjjjw65xq4xp26xq-3000.app.github.dev/users/"
 
 
 /* GET users listing. */
@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
   })
   .then((users)=>{
     let title = "Gestao de usuários"
-    let cols = ["id", "username", "email", "cpf", "dataNascimento",
+    let cols = ["id", "username", "email", "cpf", "dataDeNascimento",
 "telefone", "endereco", "password", "Ações" ]
     res.render('users', {title, users, cols, error: ""})
   })
@@ -27,40 +27,37 @@ router.get('/', function(req, res, next) {
   });
 
 //POST NEW USER
-router.post("/", (req, res)=>{
-  const {username, email, cpf, dataNascimento,
-    telefone, endereco, password} = req.body
-    fetch(url+'/register', {
+router.post("/", async (req, res) => {
+  const { username , email, cpf, dataNascimento, telefone,endereco, password } = req.body;
+  
+  try {
+    const response = await fetch(url + '/register', {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({username, email, cpf, dataNascimento,
-        telefone, endereco, password})
-    })
-    .then(async (res)=>{
-      if(!res.ok){
-        const err = await res.json()
-        throw err
-      }
-      return res.json()
-    })
-    .then((user)=>{
-      res.send(user)
-    })
-    .catch((error)=>{
-      res.status(500).send(error)
-    })   
-})
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username , email, cpf, dataNascimento, telefone,endereco, password })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      return res.status(response.status).send(err);
+    }
+
+    const user = await response.json();
+    res.send(user);
+
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 //UPDATE PUT USUARIO 
 router.put("/:id", (req, res)=>{
   const {id} = req.params
-  const {username, email, cpf, dataNascimento,
-    telefone, endereco, password} = req.body
+  const {username , email, cpf, dataNascimento, telefone,endereco, password} = req.body
     fetch(url+id, {
       method: "PUT",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({username, email, cpf, dataNascimento,
-        telefone, endereco, password})
+      body: JSON.stringify({username , email, cpf, dataNascimento, telefone,endereco, password})
     })
     .then(async (res)=>{
       if(!res.ok){

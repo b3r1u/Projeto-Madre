@@ -24,12 +24,12 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
 
 //criar usuario
 router.post("/register", (req, res) => {
-  const { username , email, cpf, telefone,endereco, password } = req.body;
+  const { username , email, cpf, dataNascimento, telefone,endereco, password } = req.body;
   console.log(req.body)
 
   db.run(
-    "INSERT INTO users (username, email, cpf, telefone,endereco, password) VALUES (?, ?, ?, ?, ?, ?)",
-    [username, email, cpf, telefone,endereco,password],
+    "INSERT INTO users (username , email, cpf, dataNascimento, telefone,endereco, password ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [username , email, cpf, dataNascimento, telefone,endereco, password ],
     (error) => {
       if (error) {
         res.status(500).send(error);
@@ -68,10 +68,10 @@ db.get("SELECT * FROM users WHERE id = ?", [id], (error, row) => {
 //PUT USERS
 router.put('/:id', function(req, res, next) {
   const { id } = req.params;
-  const { username, email, cpf, telefone, endereco, password } = req.body;
+  const { username , email, cpf, dataNascimento, telefone,endereco, password  } = req.body;
   db.run(
-    "UPDATE users SET username = ?, email = ?, cpf = ?, telefone = ?, endereco = ?, password = ? WHERE id = ?",
-    [username, email, cpf, telefone, endereco, password, id],
+    "UPDATE users SET username = ?, email = ?, cpf = ?, dataNascimento = ?, telefone = ?, endereco = ?, password = ? WHERE id = ?",
+    [username , email, cpf, dataNascimento, telefone,endereco, password, id],
     (error) => {
       if (error) {
         res.status(500).send(error);
@@ -84,10 +84,10 @@ router.put('/:id', function(req, res, next) {
 
 router.patch('/:id', function(req, res, next) {
   const { id } = req.params;
-  const { username, email, cpf, telefone, endereco, password } = req.body;
+  const { username , email, cpf, dataNascimento, telefone,endereco, password } = req.body;
   db.run(
-    "UPDATE users SET username = ?, email = ?, cpf = ?, telefone = ?, endereco = ?, password = ? WHERE id = ?",
-    [username, email, cpf, telefone, endereco, password, id],
+    "UPDATE users SET username = ?, email = ?, cpf = ?, dataNascimento = ?, telefone = ?, endereco = ?, password = ? WHERE id = ?",
+    [username , email, cpf, dataNascimento, telefone,endereco, password, id],
     (error) => {
       if (error) {
         res.status(500).send(error);
