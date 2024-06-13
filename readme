@@ -1,1 +1,5 @@
-inicio de projeto
+Problemas
+1. PUT nao esta atualizando e nem aparecendo na tela. 
+    Aparece que foi salvo
+2. DELETE nao esta atualizando a tela automaticamente reload.
+3. nao esta aparecendo na tela

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const url = "https://fuzzy-computing-machine-pjjjw65xq4xp26xq-3000.app.github.dev/users/"
+const url = "https://musical-umbrella-vxg677wxg5j3xpv6-3000.app.github.dev/users/"
 
 
 /* GET users listing. */
