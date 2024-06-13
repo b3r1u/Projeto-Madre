@@ -2,14 +2,15 @@ var express = require('express');
 var router = express.Router();
 var sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database('./database/database.db')
+const db = new sqlite3.Database('./database/database.db');
 
 db.run(`CREATE TABLE IF NOT EXISTS pacotes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   passagem TEXT,
   validade DATE,
   saidas TEXT,
-  refeicao TEXT
+  refeicao TEXT,
+  local TEXT
 )`, (err) => {
   if (err){
     console.error("Erro ao criar a tabela pacotes: ", err);
@@ -20,21 +21,25 @@ db.run(`CREATE TABLE IF NOT EXISTS pacotes (
 
 // Criar pacote
 router.post("/", (req, res) => {
-  const { passagem, validade, saidas, refeicao } = req.body;
-  console.log(req.body)
+  const { passagem, validade, saidas, refeicao, local } = req.body;
+  console.log("Dados recebidos no POST /:", req.body);
 
-  db.run(
-    "INSERT INTO pacotes (passagem, validade, saidas, refeicao) VALUES (?, ?, ?, ?)",
-    [passagem, validade, saidas, refeicao],
-    (error) => {
-      if (error) {
-        res.status(500).send(error);
-        return;
-      } else {
-        res.status(201).send(`Pacote criado com sucesso`);
-      }
-    },
-  );
+  const validadeFormatted = validade; // Assuming the date is already in the correct format
+
+  const query = "INSERT INTO pacotes (passagem, validade, saidas, refeicao, local) VALUES (?, ?, ?, ?, ?)";
+  const params = [passagem, validadeFormatted, saidas, refeicao, local];
+
+  console.log("Query a ser executada:", query);
+  console.log("Parâmetros da query:", params);
+
+  db.run(query, params, function(error) {
+    if (error) {
+      console.error("Erro ao inserir no banco de dados:", error);
+      res.status(500).json({ message: "Erro ao inserir no banco de dados", error });
+    } else {
+      res.status(201).send("Pacote criado com sucesso");
+    }
+  });
 });
 
 /* GET PACOTES */
@@ -63,10 +68,11 @@ router.get('/:id', function(req, res, next) {
 // PUT PACOTES
 router.put('/:id', function(req, res, next) {
   const { id } = req.params;
-  const { passagem, validade, saidas, refeicao } = req.body;
+  const { passagem, validade, saidas, refeicao, local } = req.body;
+  const validadeFormatted = validade; // Assuming the date is already in the correct format
   db.run(
-    "UPDATE pacotes SET passagem = ?, validade = ?, saidas = ?, refeicao = ? WHERE id = ?",
-    [passagem, validade, saidas, refeicao, id],
+    "UPDATE pacotes SET passagem = ?, validade = ?, saidas = ?, refeicao = ?, local = ? WHERE id = ?",
+    [passagem, validadeFormatted, saidas, refeicao, local, id],
     (error) => {
       if (error) {
         res.status(500).send(error);
@@ -80,10 +86,11 @@ router.put('/:id', function(req, res, next) {
 // PATCH PACOTES
 router.patch('/:id', function(req, res, next) {
   const { id } = req.params;
-  const { passagem, validade, saidas, refeicao } = req.body;
+  const { passagem, validade, saidas, refeicao, local } = req.body;
+  const validadeFormatted = validade; // Assuming the date is already in the correct format
   db.run(
-    "UPDATE pacotes SET passagem = ?, validade = ?, saidas = ?, refeicao = ? WHERE id = ?",
-    [passagem, validade, saidas, refeicao, id],
+    "UPDATE pacotes SET passagem = ?, validade = ?, saidas = ?, refeicao = ?, local = ? WHERE id = ?",
+    [passagem, validadeFormatted, saidas, refeicao, local, id],
     (error) => {
       if (error) {
         res.status(500).send(error);
