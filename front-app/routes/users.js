@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const url = "https://musical-umbrella-vxg677wxg5j3xpv6-3000.app.github.dev/users/"
+const url = "https://fuzzy-computing-machine-pjjjw65xq4xp26xq-3000.app.github.dev/users/"
 
 
 /* GET users listing. */
@@ -18,37 +18,38 @@ router.get('/', function(req, res, next) {
     let title = "Gestao de usuários"
     let cols = ["id", "username", "email", "cpf", "dataDeNascimento",
 "telefone", "endereco", "password", "Ações" ]
-    res.render('users', {title, users, cols, error: ""})
+    res.render('layout', {body: 'pages/users', title, users, cols, error: ""})
   })
   .catch((error)=>{
     console.log('Erro', error)
-    res.status(500).send(error)
+    //res.status(500).send(error)
+    res.render('layout',{body: 'pages/users', title: "Gestão de Usuários", error })
   })
   });
 
+
 //POST NEW USER
-router.post("/", async (req, res) => {
+router.post("/",(req, res) => {
   const { username , email, cpf, dataNascimento, telefone,endereco, password } = req.body;
-  
-  try {
-    const response = await fetch(url + '/register', {
+
+    fetch(url + '/register', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username , email, cpf, dataNascimento, telefone,endereco, password })
-    });
-
-    if (!response.ok) {
-      const err = await response.json();
-      return res.status(response.status).send(err);
+    }).then(async(res)=>{
+    if(!res.ok) {
+      const err = await res.json();
+      throw err
     }
-
-    const user = await response.json();
-    res.send(user);
-
-  } catch (error) {
+    return res.json()
+  })
+    .then((user)=>{
+      res.send(user)
+    })
+   .catch ((error) =>{
     res.status(500).send(error);
-  }
-});
+  })
+})
 
 //UPDATE PUT USUARIO 
 router.put("/:id", (req, res)=>{

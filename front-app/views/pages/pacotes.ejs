@@ -1,0 +1,129 @@
+<h1>
+    <%=title%>
+</h1>
+<form id="formulario">
+        <input required type="hidden" name="id" id="id">
+        <label for="passagem">Passagem:</label>
+        <input required name="passagem" id="passagem" type="text"><br>
+        <label for="validade">Validade:</label>
+        <input required name="validade" id="validade" type="text"><br>
+        <label for="localSaida">Local Saída:</label>
+        <input required name="localSaida" id="localSaida" type="text"><br>    
+        <label for="refeicao">Refeição:</label>
+        <input required name="refeicao" id="refeicao" type="text"><br>
+        <label for="localDestino">Local Destino:</label>
+        <input required name="localDestino" id="localDestino" type="text"><br>
+        <button type="submit">ENVIAR</button>
+        <button type="reset">CANCELAR</button>
+</form>
+<span id="error"></span>
+
+<% if(error){%>
+    <span><%=error%></span>
+<%}%>
+
+<table>
+    <thead>
+        <tr>
+            <% for (let col of cols) { %>
+                <th><%= col %></th>
+            <% } %>
+            
+        </tr>
+    </thead>
+    <tbody>
+        <% for (let pacote of pacotes) { %>
+            <tr>
+                <% for (let prop in pacote) { %>
+                    <td><%= pacote[prop] %></td>
+                <% } %> 
+                <td>
+                    <button onclick = "editPacote('<%=pacote.id%>')">EDITAR</button>
+                    <button onclick = "deletarPacote('<%=pacote.id%>')">EXCLUIR</button>
+                </td>
+            </tr>
+        <% } %>    
+    </tbody>
+</table>
+
+<script>
+
+    //paramos aqui 
+
+    const form = document.getElementById('formulario')
+    form.addEventListener("submit", (e)=>{
+        e.preventDefault()
+        const pacote = mountDataForm()
+        let id = pacote.id
+        let METHOD = id ? 'PUT' : 'POST';
+        let URL = id ? '/pacotes/${id}' : '/pacotes';
+        createUpdate(pacote, URL, METHOD)
+    })
+
+    //criar ou atualizar pacotes
+    function createUpdate(pacote, URL, METHOD) {
+        console.log(pacote)
+        fetch(URL, {
+            method: METHOD,
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(pacote)
+        })
+        .then(async (res)=>{return await checkError(res)})
+        .then((pacote) =>  {
+            console.log( 'foi salvo', pacote)
+            form.reset()
+            window.location.reload()
+        })
+        .catch((error) =>  {document.getElementById('error').innerText = error}) 
+        }
+    
+        //buscar pacote a ser editado pelo id e carregar nos inputs do form
+        function editPacote(id){
+        fetch("/pacotes/"+id, {
+            method: "GET"
+        })
+        .then(async (res)=>{return await checkError(res)})
+        .then((pacote) =>  {
+            console.log( 'retornou o pacote', pacote)
+           for(let prop in pacote){
+            const input = document.querySelector(`input[name="${prop}"]`)
+            input.value = pacote[prop] 
+           }
+        })
+        .catch((error) =>  {document.getElementById('error').innerText = error}) 
+     }
+
+    // deletar os pacotes pelo ID - perguntar pq n ta dando refresh 
+    function deletarPacote(id){
+        fetch("/pacotes/"+id, {
+            method: "DELETE"
+        })
+        .then(async (res)=>{return await checkError(res)})
+        .then((pacote) =>  {
+            window.location.reload()
+        })
+        .catch((error) =>  {document.getElementById('error').innerText = error}) 
+ 
+    }
+
+    //checar erro na resposta da requisicao
+    async function checkError(res){
+        if(!res.ok){
+            const err = await res.json()
+            throw err
+            }
+            return res.json()
+    }
+
+    //montar dados do formulario usando formData
+    function mountDataForm() {
+        const formData = new FormData(form)
+        const pacote = {}
+        formData.forEach((v, k)=>{
+            pacote[k] = v
+        })
+        return pacote
+    }
+
+
+</script>

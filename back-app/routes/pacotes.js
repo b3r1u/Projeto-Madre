@@ -8,9 +8,9 @@ db.run(`CREATE TABLE IF NOT EXISTS pacotes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   passagem TEXT,
   validade DATE,
-  saidas TEXT,
+  localSaida TEXT,
   refeicao TEXT,
-  local TEXT
+  localDestino TEXT
 )`, (err) => {
   if (err){
     console.error("Erro ao criar a tabela pacotes: ", err);
@@ -20,27 +20,25 @@ db.run(`CREATE TABLE IF NOT EXISTS pacotes (
 });
 
 // Criar pacote
-router.post("/", (req, res) => {
-  const { passagem, validade, saidas, refeicao, local } = req.body;
-  console.log("Dados recebidos no POST /:", req.body);
+router.post("/register", (req, res) => {
+  const { passagem, validade, localSaida, refeicao, localDestino } = req.body;
+  console.log(req.body)
 
-  const validadeFormatted = validade; // Assuming the date is already in the correct format
-
-  const query = "INSERT INTO pacotes (passagem, validade, saidas, refeicao, local) VALUES (?, ?, ?, ?, ?)";
-  const params = [passagem, validadeFormatted, saidas, refeicao, local];
-
-  console.log("Query a ser executada:", query);
-  console.log("Parâmetros da query:", params);
-
-  db.run(query, params, function(error) {
-    if (error) {
-      console.error("Erro ao inserir no banco de dados:", error);
-      res.status(500).json({ message: "Erro ao inserir no banco de dados", error });
-    } else {
-      res.status(201).send("Pacote criado com sucesso");
-    }
-  });
+  db.run(
+    "INSERT INTO users (passagem, validade, localSaida, refeicao, localDestino ) VALUES (?, ?, ?, ?, ?)",
+    [passagem, validade, localSaida, refeicao, localDestino ],
+    (error) => {
+      if (error) {
+        res.status(500).send(error);
+        return;
+      }
+      else{
+      res.status(201).send(`Pacote ${localDestino} cadastrado com sucesso`);
+      }
+    },
+  );
 });
+  
 
 /* GET PACOTES */
 router.get('/', function(req, res, next) {
@@ -68,11 +66,10 @@ router.get('/:id', function(req, res, next) {
 // PUT PACOTES
 router.put('/:id', function(req, res, next) {
   const { id } = req.params;
-  const { passagem, validade, saidas, refeicao, local } = req.body;
-  const validadeFormatted = validade; // Assuming the date is already in the correct format
+  const { passagem, validade, localSaida, refeicao, localDestino } = req.body;
   db.run(
-    "UPDATE pacotes SET passagem = ?, validade = ?, saidas = ?, refeicao = ?, local = ? WHERE id = ?",
-    [passagem, validadeFormatted, saidas, refeicao, local, id],
+    "UPDATE pacotes SET passagem = ?, validade = ?, localSaida = ?, refeicao = ?, localDestino = ? WHERE id = ?",
+    [passagem, validade, localSaida, refeicao, localDestino, id],
     (error) => {
       if (error) {
         res.status(500).send(error);
@@ -86,11 +83,10 @@ router.put('/:id', function(req, res, next) {
 // PATCH PACOTES
 router.patch('/:id', function(req, res, next) {
   const { id } = req.params;
-  const { passagem, validade, saidas, refeicao, local } = req.body;
-  const validadeFormatted = validade; // Assuming the date is already in the correct format
+  const { passagem, validade, localSaida, refeicao, localDestino } = req.body;
   db.run(
-    "UPDATE pacotes SET passagem = ?, validade = ?, saidas = ?, refeicao = ?, local = ? WHERE id = ?",
-    [passagem, validadeFormatted, saidas, refeicao, local, id],
+    "UPDATE pacotes SET passagem = ?, validade = ?, localSaida = ?, refeicao = ?, localDestino = ? WHERE id = ?",
+    [passagem, validade, localSaida, refeicao, localDestino, id],
     (error) => {
       if (error) {
         res.status(500).send(error);
