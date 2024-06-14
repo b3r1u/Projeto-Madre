@@ -1,134 +1,135 @@
 <h1>
     <%=title%>
 </h1>
-<form id="formulario">
-        <input required type="hidden" name="id" id="id">
-        <label for="username">Nome completo:</label>
-        <input required name="username" id="username" type="text"><br>
-        <label for="email">Email:</label>
-        <input required name="email" id="email" type="text"><br>
-        <label for="cpf">CPF:</label>
-        <input required name="cpf" id="cpf" type="text"><br>
-        <label for="dataNascimento">Data Nascimento:</label>
-        <input required name="dataNascimento" id="dataNascimento" type="text"><br>
-        <label for="telefone">Telefone:</label>
-        <input required name="telefone" id="telefone" type="text"><br>
-        <label for="endereco">Endereço:</label>
-        <input required name="endereco" id="endereco" type="text"><br>
-        <label for="password">Senha:</label>
-        <input required name="password" id="password" type="text"><br>
-        <button type="submit">ENVIAR</button>
-        <button type="reset">CANCELAR</button>
+
+<form id="userForm">
+    <input required type="hidden" name="id" id="id">
+    <label for="username">Nome completo:</label>
+    <input required name="username" id="username" type="text"><br>
+    <label for="email">Email:</label>
+    <input required name="email" id="email" type="text"><br>
+    <label for="cpf">CPF:</label>
+    <input required name="cpf" id="cpf" type="text"><br>
+    <label for="dataNascimento">Data Nascimento:</label>
+    <input required name="dataNascimento" id="dataNascimento" type="text"><br>
+    <label for="telefone">Telefone:</label>
+    <input required name="telefone" id="telefone" type="text"><br>
+    <label for="endereco">Endereço:</label>
+    <input required name="endereco" id="endereco" type="text"><br>
+    <label for="password">Senha:</label>
+    <input required name="password" id="password" type="text"><br>
+    <button type="submit">ENVIAR</button>
+    <button type="reset">CANCELAR</button>
 </form>
 
 <span id="error"></span>
 
-<% if(error){%>
-    <span><%=error%></span>
-<%}%>
+<%if(error){%>
+    <span>
+        <%=error%>
+    </span>
+    <%}%>
 
-<table>
-    <thead>
-        <tr>
-            <% for (let col of cols) { %>
-                <th><%= col %></th>
-            <% } %>
-            
-        </tr>
-    </thead>
-    <tbody>
-        <% for (let user of users) { %>
-            <tr>
-                <% for (let prop in user) { %>
-                    <td><%= user[prop] %></td>
-                <% } %> 
-                <td>
-                    <button onclick = "editUser('<%=user.id%>')">EDITAR</button>
-                    <button onclick = "deletarUser('<%=user.id%>')">EXCLUIR</button>
-                </td>
-            </tr>
-        <% } %>    
-    </tbody>
-</table>
+        <table>
+            <thead>
+                <tr>
+                    <%for(let col of cols){%>
+                        <th>
+                            <%=col%>
+                        </th>
+                        <%}%>
+                </tr>
+            </thead>
+            <tbody>
+                <%for(let user of users){%>
+                    <tr>
+                        <%for(let prop in user){%>
+                            <td>
+                                <%=user[prop]%>
+                            </td>
+                            <%}%>
+                                <td>
+                                    <button onclick="editUser('<%=user.id%>')">Editar</button>
+                                    <button onclick="deleteUser('<%=user.id%>')">Deletar</button>
+                                </td>
+                    </tr>
+                    <%}%>
+            </tbody>
+        </table>
 
-<script>
+        <script>
+            const form = document.getElementById('userForm')
+            form.addEventListener("submit", (e) => {
+                e.preventDefault()
+                const user = mountDataForm()
+                let id = user.id
+                let METHOD = id ? 'PUT' : 'POST';
+                let URL = id ? `/users/${id}` : '/users';
+                createOrUpdate(user, URL, METHOD)
+            })
 
-    //paramos aqui 
-
-    const form = document.getElementById('formulario')
-    form.addEventListener("submit", (e)=>{
-        e.preventDefault()
-        const user = mountDataForm()
-        let id = user.id
-        let METHOD = id ? 'PUT' : 'POST';
-        let URL = id ? '/users/${id}' : '/users';
-        createUpdate(user, URL, METHOD)
-    })
-
-    //criar ou atualizar usuario
-    function createUpdate(user, URL, METHOD) {
-        console.log(user)
-        fetch(URL, {
-            method: METHOD,
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(user)
-        })
-        .then(async (res)=>{return await checkError(res)})
-        .then((user) =>  {
-            console.log( 'foi salvo', user)
-            form.reset()
-            window.location.reload()
-        })
-        .catch((error) =>  {document.getElementById('error').innerText = error}) 
-        }
-    
-        //buscar usuario a ser editado pelo id e carregar nos inputs do form
-        function editUser(id){
-        fetch("/users/"+id, {
-            method: "GET"
-        })
-        .then(async (res)=>{return await checkError(res)})
-        .then((user) =>  {
-            console.log( 'retornou o usuário', user)
-           for(let prop in user){
-            const input = document.querySelector(`input[name="${prop}"]`)
-            input.value = user[prop] 
-           }
-        })
-        .catch((error) =>  {document.getElementById('error').innerText = error}) 
-     }
-
-    // deletar os usuarios pelo ID - perguntar pq n ta dando refresh 
-    function deletarUser(id){
-        fetch("/users/"+id, {
-            method: "DELETE"
-        })
-        .then(async (res)=>{return await checkError(res)})
-        .then((user) =>  {
-            window.location.reload()
-        })
-        .catch((error) =>  {document.getElementById('error').innerText = error}) 
- 
-    }
-
-    //checar erro na resposta da requisicao
-    async function checkError(res){
-        if(!res.ok){
-            const err = await res.json()
-            throw err
+            // CRIAR OU ATULIZAR USUÁRIO
+            function createOrUpdate(user, URL, METHOD) {
+                console.log(user)
+                fetch(URL, {
+                    method: METHOD,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(user)
+                })
+                    .then(async (res) => { return await checkError(res) })
+                    .then((user) => {
+                        form.reset()
+                        window.location.reload()
+                    })
+                    .catch((error) => { document.getElementById('error').innerText = error })
             }
-            return res.json()
-    }
 
-    //montar dados do formulario usando formData
-    function mountDataForm() {
-        const formData = new FormData(form)
-        const user = {}
-        formData.forEach((v, k)=>{
-            user[k] = v
-        })
-        return user
-    }
+            // BUSCAR USUÁRIO A SER EDITADO PELO ID E CARREGAR NOS INPUTS DO FORM
+            function editUser(id) {
+            console.log(id)
+                fetch("/users/" + id, {
+                    method: "GET"
+                })
+                    .then(async (res) => { return await checkError(res) })
+                    .then((user) => {
+                        console.log('retornou o usuário', user)
+                        for (let prop in user) {
+                            const input = document.querySelector(`input[name="${prop}"]`);
+                            input.value = user[prop]
+                        }
+                    })
+                    .catch((error) => { document.getElementById('error').innerText = error })
+            }
 
+            // DELETAR UM USUÁRIO PELO ID
+            function deleteUser(id) {
+                fetch("/users/" + id, {
+                    method: "DELETE"
+                })
+                    .then(async (res) => { return await checkError(res) })
+                    .then((user) => {
+                        window.location.reload()
+                    })
+                    .catch((error) => { document.getElementById('error').innerText = error })
+            }
 
-</script>
+            // CHECAR ERROS NA RESPOSTA DA REQUISIÇÃO
+            async function checkError(res) {
+                if (!res.ok) {
+                    const err = await res.json()
+                    throw err
+                }
+                return res.json()
+            }
+
+            // MONTAR DADOS DO FORMULÁRIO USANDO FORMDATA
+            function mountDataForm() {
+                const formData = new FormData(form)
+                const user = {}
+                formData.forEach((v, k) => {
+                    user[k] = v
+                })
+                return user
+            }
+
+        </script>

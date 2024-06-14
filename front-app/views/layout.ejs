@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APP FULLSTACH COM EXPRESS</title>
+    <%- include('partials/header')%>
 </head>
+
 <body>
     <header>
-        <%- include('partials/header')%>
+        <%- include('partials/nav')%>
     </header>
 
     <main>
-        <%- include(body)%>
+        <div class="container">
+            <%- include(body)%>
+        </div>
     </main>
-    
+
+    <footer>
+        <%- include('partials/footer')%>
+    </footer>
+
 </body>
+
 </html>
